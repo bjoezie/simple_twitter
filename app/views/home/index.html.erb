@@ -1,0 +1,26 @@
+<div style="padding:20px; margin-top:30px">
+	<h1>Latest Tweets</h1>
+	<table>
+		<% Tweet.ordered_by_time.all.each do |tweet| %>
+		<tr>
+			<td>
+				<u><%= tweet.time_posted %> </u><br>
+				<%= tweet.content %><br>
+				by <%= link_to tweet.author, controller: '/home', action: 'author_page', author: tweet.author %><br>
+				<br>
+			</td>
+			<td style="padding-left:30px">
+				<% if user_signed_in? %>
+					<% if current_user.email == tweet.author %>
+						<%= link_to "Delete Tweet", tweet_path(tweet), method: :delete %>
+					<% elsif current_user.author_is_followed?(tweet.author) %>
+						<%= link_to "Unfollow", controller: 'subscription_actions', action: 'unfollow', author: tweet.author %>
+					<% else %>
+						<%= link_to "Follow", controller: 'subscription_actions', action: 'follow', author: tweet.author %> 
+					<% end %>
+				<% end %>
+			</td>
+		</tr>
+		<% end %>
+	</table>
+</div>

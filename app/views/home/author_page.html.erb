@@ -1,0 +1,31 @@
+<div style="padding:20px; margin-top:30px">
+	<h1><%= @author %>'s feed</h1>
+	<% if user_signed_in? %>
+		<% unless @author == current_user.email %>
+			<%= link_to "#{@follow_unfollow} #{@author}", controller: 'subscription_actions', action: @follow_unfollow, author: @author %>
+		<% end %>
+	<% end %>
+
+</div>
+<div style="padding:20px">
+	<table>
+		<% user = User.find_by('email = ?', @author) %>
+		<% user.tweets.ordered_by_time.each do |tweet| %>
+		<tr>
+			<td>
+				<u><%= tweet.time_posted %> </u><br>
+				<%= tweet.content %><br>
+				by <%= link_to(tweet.author, {controller: '/home', action: 'author_page', author: tweet.author}) %><br>
+				<br>
+			</td>
+			<% if user_signed_in? %>
+				<% if @author == current_user.email %>				
+				<td>
+					<%= link_to "Delete Tweet", tweet_path(tweet), method: :delete %>
+				</td>
+				<% end %>
+			<% end %>
+		</tr>
+		<% end %>
+	</table>
+</div>

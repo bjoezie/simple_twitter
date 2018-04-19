@@ -1,0 +1,32 @@
+<div style="padding:20px; margin-top:30px">
+	<h1>My Feed</h1>
+	<% if user_signed_in? %>
+	<table>
+		<% authors_subscribed_to = current_user.subscriptions.pluck(:author) %>
+		<% authors_subscribed_to << current_user.email %>
+		<% Tweet.ordered_by_time.where(author: authors_subscribed_to).all.each do |tweet| %>
+		<tr>
+			<td>
+				<u><%= tweet.time_posted %> </u><br>
+				<%= tweet.content %><br>
+				by <%= link_to(tweet.author, {controller: '/home', action: 'author_page', author: tweet.author}) %><br>
+				<br>
+			</td>
+			<td style="padding-left:30px">
+				<% if user_signed_in? %>
+					<% if current_user.email == tweet.author %>
+						<%= link_to "Delete Tweet", controller: 'tweet', action: 'destroy', id: tweet.id %>
+					<% elsif current_user.author_is_followed?(tweet.author) %>
+						<%= link_to "Unfollow", controller: 'subscription_actions', action: 'unfollow', author: tweet.author %>
+					<% else %>
+						<%= link_to "Follow", controller: 'subscription_actions', action: 'follow', author: tweet.author %> 
+					<% end %>
+				<% end %>
+			</td>
+		</tr>
+		<% end %>
+	</table>
+	<% else %> 
+	<p>Error: please log in first.</p>
+	<% end %>
+</div>
